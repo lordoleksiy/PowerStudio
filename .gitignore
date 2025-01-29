@@ -1,0 +1,59 @@
+## Ignore .NET build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Dd]ist/
+[Dd]evelopment/
+[Dd]eploy/
+[Dd]ebug+/
+[Dd]ebug+/[Pp]rofile/
+[Dd]ebug+/[Pp]rofile*/[Ll]og/
+[Dd]ebug+/[Pp]rofile*/[Ll]og/*/
+
+## Ignore NuGet packages
+*.nupkg
+*.snupkg
+**/*.nuspec
+
+## Ignore build output directories
+bin/
+obj/
+
+## Ignore VSIX output directory
+.vsix/
+
+## Ignore user-specific files
+.vscode/
+.idea/
+.vs/
+.vs2017/
+.vs2019/
+.vs2017/
+
+## Ignore user-specific files for VS2019
+.vs2019/
+.vs2019/*/
+
+## Ignore VS temp and backup files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Ignore Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+## Ignore all temp files
+*.tmp
+*.bak
+
+## Ignore dotCover files
+.idea/dotCover
+
+# Ignore appsettings.json
+appsettings.json
+
+# Ignore the VSIX manifest when building the VSIX
+.vs/ 
