@@ -2,6 +2,7 @@
 using PowerStudio.Services;
 using PowerStudio.ViewModels;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace PowerStudio
 {
@@ -13,12 +14,21 @@ namespace PowerStudio
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindowControl"/> class.
         /// </summary>
+        private readonly MainWindowViewModel _viewModel;
         public MainWindowControl(MainWindowViewModel viewModel)
         {
+            _viewModel = viewModel;
             this.InitializeComponent();
-            this.DataContext = viewModel;
+            this.DataContext = _viewModel;
         }
-
+        private void MyTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.S)
+            {
+                e.Handled = true;
+                _viewModel.SaveCommand.Execute(null);
+            }
+        }
         /// <summary>
         /// Handles click on the button by displaying a message box.
         /// </summary>

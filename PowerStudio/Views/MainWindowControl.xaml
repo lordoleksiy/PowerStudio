@@ -9,8 +9,8 @@
              Background="{DynamicResource {x:Static vsshell:VsBrushes.WindowKey}}"
              Foreground="{DynamicResource {x:Static vsshell:VsBrushes.WindowTextKey}}"
              mc:Ignorable="d"
-             MinWidth="800" MinHeight="600"
              d:DesignHeight="600" d:DesignWidth="800"
+             HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
              Name="MyToolWindow">
     
     <UserControl.Resources>
@@ -21,35 +21,50 @@
             <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#3C3F41">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
         <!-- Top Panel -->
-        <DockPanel Background="#3C3F41" Height="50" VerticalAlignment="Top" LastChildFill="False">
+        <Grid Background="#3C3F41" Height="50" VerticalAlignment="Top" Grid.ColumnSpan="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
             <Button Command="{Binding AuthButtonClickedCommand}" 
-                Content="{Binding AuthButtonText}" 
-                Name="SignInButton" Width="80" Height="30" Margin="10,10,0,10" DockPanel.Dock="Left" 
-                Background="#5E5E5E" Foreground="#A9B7C6" BorderBrush="#5E5E5E" FontWeight="Bold" Padding="5" 
-                Style="{StaticResource RoundedButtonStyle}"/>
+                    Content="{Binding AuthButtonText}" 
+                    Name="SignInButton" Width="80" Height="30" Margin="10,10,0,10" 
+                    Background="#5E5E5E" Foreground="#A9B7C6" BorderBrush="#5E5E5E" FontWeight="Bold" Padding="5" 
+                    Style="{StaticResource RoundedButtonStyle}" Grid.Column="0"/>
 
-            <local:CustomComboBox Margin="10,10,0,10" DataContext="{Binding SubscriptionComboBox}"/>
+            <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Stretch">
+                <local:CustomComboBox Margin="10,10,0,10" DataContext="{Binding SubscriptionComboBox}" Width="200"/>
+                <local:CustomComboBox Margin="10,10,0,10" DataContext="{Binding AppServiceComboBox}" Width="200"/>
+            </StackPanel>
 
-            <local:CustomComboBox Margin="10,10,0,10" DataContext="{Binding AppServiceComboBox}"/>
-
-            <Button Command="{Binding SwitchModeCommand}" Content="Switch Mode" Name="SwitchModeButton" Width="120" Height="30" Margin="0,10,10,10" DockPanel.Dock="Right"
-            Background="#5E5E5E" Foreground="#A9B7C6" BorderBrush="#5E5E5E" FontWeight="Bold" Padding="5" Style="{StaticResource RoundedButtonStyle}"/>
-            <Button Content="⚙" Name="SettingsButton" Width="40" Height="40" Margin="0,10,10,10" DockPanel.Dock="Right"
-            Background="#5E5E5E" Foreground="#A9B7C6" BorderBrush="#5E5E5E" FontWeight="Bold" 
-            Style="{StaticResource RoundedButtonStyle}"
-            HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-
-
-        </DockPanel>
+            <Button Command="{Binding SwitchModeCommand}" Content="Switch Mode" Name="SwitchModeButton" Width="120" Height="30" Margin="0,10,10,10" 
+                    Background="#5E5E5E" Foreground="#A9B7C6" BorderBrush="#5E5E5E" FontWeight="Bold" Padding="5" 
+                    Style="{StaticResource RoundedButtonStyle}" Grid.Column="2"/>
+            <Button Content="⚙" Name="SettingsButton" Width="40" Height="40" Margin="0,10,10,10" 
+                    Background="#5E5E5E" Foreground="#A9B7C6" BorderBrush="#5E5E5E" FontWeight="Bold" 
+                    Style="{StaticResource RoundedButtonStyle}"
+                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="3"/>
+        </Grid>
 
 
         <!-- Main Content Area -->
-        <Grid Margin="10,60,10,10">
+        <Grid Margin="10,10,10,10" Grid.Row="1" Grid.ColumnSpan="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
             <!-- Table View Mode -->
-            <StackPanel Name="TableView" Visibility="{Binding IsTableViewVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,60,0,0">
+            <StackPanel Name="TableView" Visibility="{Binding IsTableViewVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,60,0,0" Grid.Row="0">
                 <!-- Add Key-Value Pair Button -->
                 <Button Content="+ Add New Key" Name="AddKeyButton" HorizontalAlignment="Left" Margin="0,0,0,10"
                         Background="#5E5E5E" Foreground="#A9B7C6" BorderBrush="#5E5E5E" FontWeight="Bold"/>
@@ -83,11 +98,24 @@
                     </DataGrid.Columns>
                 </DataGrid>
             </StackPanel>
+            <Grid Margin="10,10,10,10" Grid.Row="1" Grid.ColumnSpan="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-            <TextBox Name="JsonEditor" Visibility="{Binding IsJsonEditorVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                <!-- Повідомлення про незбережені зміни -->
+                <TextBlock Text="{Binding WarningText}" Visibility="{Binding IsWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+               Foreground="Red" Margin="0,5,0,5" FontWeight="Bold" HorizontalAlignment="Center" Grid.Row="0"/>
+
+                <!-- Редактор JSON -->
+                <TextBox Name="JsonEditor" Visibility="{Binding IsJsonEditorVisible, Converter={StaticResource BooleanToVisibilityConverter}}" 
                      Text="{Binding AppSettingsJson}" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" 
-                     HorizontalScrollBarVisibility="Auto" Margin="0,60,0,0" FontFamily="Consolas" FontSize="14"
-                     Background="#313335" Foreground="#A9B7C6" BorderBrush="#3C3F41"/>
+                     HorizontalScrollBarVisibility="Auto" Margin="0,10,0,0" FontFamily="Consolas" FontSize="14"
+                     Background="#313335" Foreground="#A9B7C6" BorderBrush="#3C3F41" Grid.Row="1"
+                     PreviewKeyDown="MyTextBox_KeyDown">
+                </TextBox>
+            </Grid>
         </Grid>
     </Grid>
 </UserControl>

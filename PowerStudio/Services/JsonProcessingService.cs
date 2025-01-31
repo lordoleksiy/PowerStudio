@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using PowerStudio.Models.Azure;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace PowerStudio.Services
@@ -22,6 +23,70 @@ namespace PowerStudio.Services
 
             return JsonConvert.SerializeObject(config, Formatting.Indented);
         }
+
+        public static ICollection<AppSettingsModel> Deserialize(string json, ICollection<AppSettingsModel> currentAppSettings)
+        {
+            var appSettings = new List<AppSettingsModel>();
+            var settings = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+            foreach (var setting in settings)
+            {
+                appSettings.AddRange(GetModelFromNode(setting.Key, setting.Value, currentAppSettings));
+            }
+            return appSettings;
+        }
+
+        private static ICollection<AppSettingsModel> GetModelFromNode(string primaryKey, object Value, ICollection<AppSettingsModel> currentAppSettings)
+        {
+            if (Value is Dictionary<string, object> settings)
+            {
+                var response = new List<AppSettingsModel>();
+                foreach (var item in settings)
+                {
+                    response.AddRange(GetModelFromNode($"{primaryKey}:{item.Key}", item.Value, currentAppSettings));
+                }
+
+                return response;
+            }
+            else if (Value is IEnumerable<Dictionary<string, object>> listSettings)
+            {
+                var response = new List<AppSettingsModel>();
+                foreach (var settingsNode in listSettings)
+                {
+                    foreach (var item in settingsNode)
+                    {
+                        response.AddRange(GetModelFromNode($"{primaryKey}:{item.Key}", item.Value, currentAppSettings));
+                    }
+                }
+
+                return response;
+            }
+            else
+            {
+                var stringValue = Value.ToString();
+                var settingsModel = new AppSettingsModel
+                {
+                    Key = primaryKey,
+                    Value = stringValue,
+                    Type = AppSettingsType.New
+                };
+                var existItem = currentAppSettings.FirstOrDefault(x => x.Key == stringValue);
+                if (existItem != null)
+                {
+                    if (existItem.Value.Equals(stringValue))
+                    {
+                        settingsModel.Type = AppSettingsType.NoChange;
+                    }
+                    else
+                    {
+                        settingsModel.Type = AppSettingsType.Update;
+                    }
+                }
+
+                return [settingsModel];
+            }
+        }
+
+
 
         private static void ProcessNode(string key, string value, Dictionary<string, object> settings)
         {

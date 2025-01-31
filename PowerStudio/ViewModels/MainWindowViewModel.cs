@@ -23,6 +23,7 @@ namespace PowerStudio.ViewModels
             AuthButtonClickedCommand = new AsyncRelayCommand(AuthButtonClickedAsync);
             SubscriptionComboBox.ItemSelectedCommand = new AsyncRelayCommand<Subscription>(SelectSubscriptionAsync);
             AppServiceComboBox.ItemSelectedCommand = new AsyncRelayCommand<AppService>(SelectAppServiceAsync);
+            SaveCommand = new RelayCommand(Save);
             AppSettings = [];
         }
 
@@ -40,7 +41,14 @@ namespace PowerStudio.ViewModels
         public string AppSettingsJson
         {
             get => _appSettingsJson;
-            set => SetProperty(ref _appSettingsJson, value);
+            set
+            {
+                if (SetProperty(ref _appSettingsJson, value))
+                {
+                    IsWarningVisible = true;
+                    WarningText = "Зміни не збережено. Натисніть Ctrl + S для збереження.";
+                }
+            }
         }
 
         private async Task AuthButtonClickedAsync()
@@ -98,6 +106,33 @@ namespace PowerStudio.ViewModels
             set { isJsonEditorVisible = value; OnPropertyChanged(); }
         }
 
+        private bool _isWarningVisible = false;
+        public bool IsWarningVisible
+        {
+            get => _isWarningVisible;
+            set => SetProperty(ref _isWarningVisible, value);
+        }
+
+        private string _warningText = string.Empty;
+        public string WarningText
+        {
+            get => _warningText;
+            set => SetProperty(ref _warningText, value);
+        }
+
+        public ICommand SaveCommand { get; }
+        private void Save()
+        {
+            var appSettings = JsonProcessingService.Deserialize(AppSettingsJson, AppSettings);
+            AppSettings.Clear();
+            foreach (var setting in appSettings)
+            {
+                AppSettings.Add(setting);
+            }
+            IsWarningVisible = false;
+            WarningText = string.Empty;
+        }
+
         public ICommand SwitchModeCommand => new RelayCommand(SwitchMode);
 
         private void SwitchMode()
@@ -105,6 +140,5 @@ namespace PowerStudio.ViewModels
             IsTableViewVisible = !IsTableViewVisible;
             IsJsonEditorVisible = !IsJsonEditorVisible;
         }
-
     }
 }
