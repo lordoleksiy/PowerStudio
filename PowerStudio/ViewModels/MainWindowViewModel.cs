@@ -40,7 +40,14 @@ namespace PowerStudio.ViewModels
         public string AppSettingsJson
         {
             get => _appSettingsJson;
-            set => SetProperty(ref _appSettingsJson, value);
+            set
+            {
+                if (SetProperty(ref _appSettingsJson, value))
+                {
+                    IsWarningVisible = true;
+                    WarningText = "Зміни не збережено. Натисніть Ctrl + S для збереження.";
+                }
+            }
         }
 
         private async Task AuthButtonClickedAsync()
@@ -97,6 +104,21 @@ namespace PowerStudio.ViewModels
             get => isJsonEditorVisible;
             set { isJsonEditorVisible = value; OnPropertyChanged(); }
         }
+
+        private bool _isWarningVisible = false;
+        public bool IsWarningVisible
+        {
+            get => _isWarningVisible;
+            set => SetProperty(ref _isWarningVisible, value);
+        }
+
+        private string _warningText = string.Empty;
+        public string WarningText
+        {
+            get => _warningText;
+            set => SetProperty(ref _warningText, value);
+        }
+
 
         public ICommand SwitchModeCommand => new RelayCommand(SwitchMode);
 

@@ -56,9 +56,20 @@ namespace PowerStudio
             }
             catch(Exception ex)
             {
-
+                //ShowExceptionMessage(ex);
             }
         }
+
+        //private void ShowExceptionMessage(Exception ex)
+        //{
+        //    VsShellUtilities.ShowMessageBox(
+        //        this,
+        //        ex.ToString(),
+        //        "Error",
+        //        OLEMSGICON.OLEMSGICON_CRITICAL,
+        //        OLEMSGBUTTON.OLEMSGBUTTON_OK,
+        //        OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+        //}
 
         #endregion
     }
